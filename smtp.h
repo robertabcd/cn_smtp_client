@@ -42,6 +42,7 @@ int smtp_quit(smtp *s);
 // return value: <0 error, >=0 success
 int smtp_write_string(smtp *s, const char *str);
 int smtp_write(smtp *s, const char *buf, int len);
+int smtp_write_line(smtp *s, const char *buf, int len);
 
 int smtp_is_positive_response(smtp *s);
 int smtp_get_code(smtp *s);

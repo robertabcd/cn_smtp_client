@@ -60,8 +60,8 @@ static int connect_server(const char *host, short port) {
 }
 
 static int data_cb(smtp *s, void *ctx) {
-	return mimemsg_write_stream((mime_msg *)ctx, 76,
-			(mime_stream_write_func)&smtp_write, s);
+	return mimemsg_write_line((mime_msg *)ctx, 76,
+			(mime_line_write_func)&smtp_write_line, s);
 }
 
 static int print_smtp_reply(smtp *s) {

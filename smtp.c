@@ -73,9 +73,15 @@ static int smtp__write_end_data(smtp *s) {
 }
 
 int smtp_write(smtp *s, const char *buf, int len) {
+	return write(s->wfd, buf, len);
+}
+
+int smtp_write_line(smtp *s, const char *buf, int len) {
 	if(len > 0 && buf[0] == '.' && write(s->wfd, ".", 1) < 0)
 		return -1;
-	return write(s->wfd, buf, len);
+	if(write(s->wfd, buf, len) >= 0 && write(s->wfd, "\r\n", 2) >= 0)
+		return 1;
+	return -1;
 }
 
 int smtp_write_string(smtp *s, const char *str) {

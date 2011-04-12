@@ -7,6 +7,7 @@
 struct mime_part;
 
 typedef int (* mime_stream_write_func) (void *ctx, const void *buf, int len);
+typedef int (* mime_line_write_func) (void *ctx, const void *buf, int len);
 typedef int (* mimepart_stream_write_func)
 	(struct mime_part *p, mime_stream_write_func writer, void *ctx);
 
@@ -43,8 +44,8 @@ int mimemsg_add_part(mime_msg *m, mime_part *part);
 int mimemsg_set_header(mime_msg *m, const char *key, const char *value);
 int mimemsg_set_boundary(mime_msg *m, const char *boundary);
 
-int mimemsg_write_stream(mime_msg *m, int wrap,
-		mime_stream_write_func writer, void *ctx);
+int mimemsg_write_line(mime_msg *m, int wrap,
+		mime_line_write_func writer, void *ctx);
 
 
 mime_part *mimepart_new_plain(const char *str);

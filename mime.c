@@ -132,10 +132,8 @@ static int mimemsg__real_write_stream(mime_msg *m,
 
 	mime_header *h;
 	for(h = m->header_head; h; h = h->next) {
-		writer(ctx, h->key, strlen(h->key));
-		writer(ctx, ": ", 2);
-		writer(ctx, h->value, strlen(h->value));
-		writer(ctx, "\r\n", 2);
+		mime__write_strings(writer, ctx,
+				h->key, ": ", h->value, "\r\n", NULL);
 	}
 
 	mime_part *p = m->part_head;
@@ -157,7 +155,7 @@ static int mimemsg__real_write_stream(mime_msg *m,
 }
 
 typedef struct _mimemsg_wrapper {
-	mime_stream_write_func orig_writer;
+	mime_line_write_func orig_writer;
 	void *orig_ctx;
 	char *buffer;
 	int len;
@@ -166,7 +164,7 @@ typedef struct _mimemsg_wrapper {
 
 static int mimemsg__wrapper(void *ctx, const void *buf, int len) {
 	_mimemsg_wrapper *w = (_mimemsg_wrapper *)ctx;
-	return w->orig_writer(w->orig_ctx, buf, len);
+
 	while(len > 0) {
 		// fill buffer to wrap length
 		int remain = w->wrap - w->len;
@@ -177,8 +175,6 @@ static int mimemsg__wrapper(void *ctx, const void *buf, int len) {
 		// shift input buffer
 		buf = &(((char *)buf)[remain]);
 		len -= remain;
-
-		if(w->len < w->wrap) continue;
 
 		// shift if there exists a line break
 		int wraplen;
@@ -194,12 +190,11 @@ static int mimemsg__wrapper(void *ctx, const void *buf, int len) {
 		}
 		if(wraplen < w->len) {
 			w->orig_writer(w->orig_ctx, w->buffer, wraplen);
-			w->orig_writer(w->orig_ctx, "\r\n", 2);
 
 			// remove line break
 			wraplen++;
 			if(hasCR) wraplen++;
-		} else {
+		} else if(w->len >= w->wrap) {
 			// find a space
 			for(wraplen = w->len-1; wraplen > 0; wraplen--)
 				if(w->buffer[wraplen] == ' ' || w->buffer[wraplen] == '\t')
@@ -207,8 +202,8 @@ static int mimemsg__wrapper(void *ctx, const void *buf, int len) {
 			if(wraplen <= 0) wraplen = w->len; // hard wrap
 
 			w->orig_writer(w->orig_ctx, w->buffer, wraplen);
-			w->orig_writer(w->orig_ctx, "\r\n", 2);
-		}
+		} else
+			continue;
 
 		// shift buffer
 		w->len -= wraplen;
@@ -218,8 +213,8 @@ static int mimemsg__wrapper(void *ctx, const void *buf, int len) {
 	return 1;
 }
 
-int mimemsg_write_stream(mime_msg *m, int wrap,
-		mime_stream_write_func writer, void *ctx) {
+int mimemsg_write_line(mime_msg *m, int wrap,
+		mime_line_write_func writer, void *ctx) {
 	_mimemsg_wrapper w;
 	w.orig_writer = writer;
 	w.orig_ctx = ctx;
