@@ -1,64 +1,64 @@
-				   Computer Network Homework #1 SMTP Client
+                   Computer Network Homework #1 SMTP Client
 
-							       Report
+                                   Report
 
-						    B98902060 Robert Wang
+                            B98902060 Robert Wang
 
 1. Flow chart
 
-	1. Parse args
-	2. Setup MIME message
-	3. Connect to and negotiate with SMTP server
-	4. Send the message
-	5. Quit
+    1. Parse args
+    2. Setup MIME message
+    3. Connect to and negotiate with SMTP server
+    4. Send the message
+    5. Quit
 
 2. Execution instruction
 
-	I designed it to take arguments.
+    I designed it to take arguments.
 
-	Usage: ./SimpleMail
-	  -h host
-	 [-p port]
-	  -f from_address
-	  -t to_addr1 [-t to_addr2] [...]
-	 [-c cc_addr1] [-c cc_addr2] [...]
-	 [-s subject]
-	  -d content | -D content_file
-	 [-a attach_file1] [-a attach_file2] [...]
+    Usage: ./SimpleMail
+      -h host
+     [-p port]
+      -f from_address
+      -t to_addr1 [-t to_addr2] [...]
+     [-c cc_addr1] [-c cc_addr2] [...]
+     [-s subject]
+      -d content | -D content_file
+     [-a attach_file1] [-a attach_file2] [...]
 
 3. What did I do? and how?
 
-	I divided the program into parts:
+    I divided the program into parts:
 
-	a) Main program:
-		Parse arguments, main control flows.
+    a) Main program:
+        Parse arguments, main control flows.
 
-	b) MIME message:
-		Create MIME messages, including multipart messages.
-		The interface is designed in an object-oriented way, so it is
-		extensible and flexible.
+    b) MIME message:
+        Create MIME messages, including multipart messages.
+        The interface is designed in an object-oriented way, so it is
+        extensible and flexible.
 
-	c) SMTP client:
-		Handles the communication with the SMTP server.
+    c) SMTP client:
+        Handles the communication with the SMTP server.
 
-	d) Base64 encoding:
-		Encode binary data into base64. The library is designed to run
-		"on-the-fly", which has little memory footprint, without losing
-		considerable performance.
+    d) Base64 encoding:
+        Encode binary data into base64. The library is designed to run
+        "on-the-fly", which has little memory footprint, without losing
+        considerable performance.
 
-	The whole data flow is designed to use little memory. By using a
-	writer function to pass data around, it is possible to eliminate
-	the overuse of buffers. Take base64 encoding routine for example,
+    The whole data flow is designed to use little memory. By using a
+    writer function to pass data around, it is possible to eliminate
+    the overuse of buffers. Take base64 encoding routine for example,
 
-		int base64_encode_stream(
-			read_func reader, write_func writer, void *ctx);
+        int base64_encode_stream(
+            read_func reader, write_func writer, void *ctx);
 
-	This design enables the user of the base64 encoding API to hold less
-	data in his hand at a time.
+    This design enables the user of the base64 encoding API to hold less
+    data in his hand at a time.
 
-	The RFC specification suggests SMTP client send less than 78 chars
-	per line. I have also handled this in the MIME message output part.
-	I was originally faced with problems caused by the nature of streams,
-	which had no concept of lines. But I coped this by changing to SMTP
-	API and the output callback of MIME message API into line-based.
+    The RFC specification suggests SMTP client send less than 78 chars
+    per line. I have also handled this in the MIME message output part.
+    I was originally faced with problems caused by the nature of streams,
+    which had no concept of lines. But I coped this by changing to SMTP
+    API and the output callback of MIME message API into line-based.
 
