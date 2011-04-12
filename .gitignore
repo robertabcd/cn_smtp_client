@@ -3,3 +3,4 @@ client
 test_b64
 test_mime
 test_smtp
+SimpleMail
