@@ -6,6 +6,8 @@
 
 1. Flow chart
 
+	For more detail see "flowchart_dataflow.png".
+
     1. Parse args
     2. Setup MIME message
     3. Connect to and negotiate with SMTP server
