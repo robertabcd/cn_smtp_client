@@ -1,4 +1,6 @@
 client:
+	gcc -Wall -g -o SimpleMail SimpleMail.c buffer.c smtp.c mime.c mimepart.c base64.c
+cmdline:
 	gcc -Wall -g -o SimpleMail client.c buffer.c smtp.c mime.c mimepart.c base64.c
 test:
 	gcc -Wall -g -o test_b64 test_b64.c base64.c

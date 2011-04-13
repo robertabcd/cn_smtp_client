@@ -77,6 +77,9 @@ int smtp_write(smtp *s, const char *buf, int len) {
 }
 
 int smtp_write_line(smtp *s, const char *buf, int len) {
+	/*write(s->wfd, "[", 1);
+	write(s->wfd, buf, len);
+	write(s->wfd, "]", 1);*/
 	if(len > 0 && buf[0] == '.' && write(s->wfd, ".", 1) < 0)
 		return -1;
 	if(write(s->wfd, buf, len) >= 0 && write(s->wfd, "\r\n", 2) >= 0)

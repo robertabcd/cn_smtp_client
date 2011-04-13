@@ -165,16 +165,18 @@ typedef struct _mimemsg_wrapper {
 static int mimemsg__wrapper(void *ctx, const void *buf, int len) {
 	_mimemsg_wrapper *w = (_mimemsg_wrapper *)ctx;
 
-	while(len > 0) {
-		// fill buffer to wrap length
-		int remain = w->wrap - w->len;
-		if(remain > len) remain = len;
-		memcpy(&w->buffer[w->len], buf, remain);
-		w->len += remain;
+	while(w->len > 0 || len > 0) {
+		if(len > 0) {
+			// fill buffer to wrap length
+			int remain = w->wrap - w->len;
+			if(remain > len) remain = len;
+			memcpy(&w->buffer[w->len], buf, remain);
+			w->len += remain;
 
-		// shift input buffer
-		buf = &(((char *)buf)[remain]);
-		len -= remain;
+			// shift input buffer
+			buf = &(((char *)buf)[remain]);
+			len -= remain;
+		}
 
 		// shift if there exists a line break
 		int wraplen;
@@ -202,6 +204,8 @@ static int mimemsg__wrapper(void *ctx, const void *buf, int len) {
 			if(wraplen <= 0) wraplen = w->len; // hard wrap
 
 			w->orig_writer(w->orig_ctx, w->buffer, wraplen);
+		} else if(len <= 0) {
+			break;
 		} else
 			continue;
 
