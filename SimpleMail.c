@@ -59,7 +59,7 @@ static int Error(const char *msg) {
 
 static const char *NormalizeAddress(const char *addr) {
 	static char buffer[256];
-	if(strlen(addr) < 2) return NULL;
+	if(strlen(addr) < 1) return NULL;
 	if(addr[0] == '<')
 		strncpy(buffer, addr, sizeof(buffer));
 	else
@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
 	smtp_set_fd(s, fd, fd);
 
 	// Wait for welcome msg
-	if(!smtp_read_welcome(s))
+	if(!smtp_read_welcome(s) && !smtp_helo(s, "cnmail.csie.org"))
 		return Error("No welcome message.");
 
 	int ret;
