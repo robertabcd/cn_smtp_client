@@ -1,0 +1,14 @@
+This program is one of the assignments of the computer network course I take.
+Although it is not designed very well, It still works when the content of a 
+mail is US-ASCII encoding. The whole effort was put in to base64 encoding and
+SMTP protocol handling.
+
+--FEATURES--
+
+The base64 encoding part is designed to use very little memory, it encodes 
+on-the-fly. Also, a stream wrapper is implemented to handle line-wrapping.
+
+--WARRANTY--
+
+There is absolutely no warranty for this program, and may be many bugs
+unidentified.
